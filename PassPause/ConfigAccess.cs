@@ -21,9 +21,19 @@ namespace Betarium.PassPause
             public string Comment { get; set; }
         }
 
+        public enum EncryptModeOption
+        {
+            None,
+            Rot13,
+            UrlEncode,
+            AES,
+        };
+
+        public EncryptModeOption EncryptMode { get; set; }
         public string EncryptKey { private get; set; }
 
         private XmlDocument Document { get; set; }
+        private XmlNode RootFolder { get { return Document.SelectSingleNode("//PassPause/RootFolder"); } }
 
         public ConfigAccess()
         {
@@ -33,16 +43,21 @@ namespace Betarium.PassPause
         public void Create()
         {
             EncryptKey = "";
+            EncryptMode = EncryptModeOption.AES;
+
             Document = new XmlDocument();
 
             XmlDeclaration declaration = Document.CreateXmlDeclaration("1.0", null, null);
             Document.AppendChild(declaration);
 
-            XmlElement toptag = Document.CreateElement("PassPause");
-            Document.AppendChild(toptag);
+            XmlElement root = Document.CreateElement("PassPause");
+            Document.AppendChild(root);
 
-            XmlElement root = Document.CreateElement("RootFolder");
-            toptag.AppendChild(root);
+            XmlElement settings = Document.CreateElement("Settings");
+            root.AppendChild(settings);
+
+            XmlElement rootFolder = Document.CreateElement("RootFolder");
+            root.AppendChild(rootFolder);
         }
 
         public void Load(string filePath)
@@ -50,8 +65,14 @@ namespace Betarium.PassPause
             XmlDocument xml = new XmlDocument();
             xml.Load(filePath);
 
-            XmlNode root = xml.SelectSingleNode("//PassPause/RootFolder");
-            if (root == null)
+            XmlNode rootFolder = xml.SelectSingleNode("//PassPause/RootFolder");
+            if (rootFolder == null)
+            {
+                return;
+            }
+
+            XmlNode settings = xml.SelectSingleNode("//PassPause/Settings");
+            if (settings == null)
             {
                 return;
             }
@@ -61,35 +82,35 @@ namespace Betarium.PassPause
 
         public void Save(string filePath)
         {
+            SetSetting("EncryptMode", EncryptMode.ToString());
+
             Document.Save(filePath);
         }
 
-        protected XmlNode RootFolder { get { return Document.SelectSingleNode("//PassPause/RootFolder"); } }
-
-        /*
-        public ConfigData FindData(string name)
+        private void SetSetting(string name, string value)
         {
-            XmlNode root = Document.SelectSingleNode("//PassPause/RootFolder");
-
-            ConfigData data = new ConfigData();
-            foreach (XmlNode item in root)
+            XmlNode settings = Document.SelectSingleNode("//PassPause/Settings");
+            var encryptModeNode = settings.SelectSingleNode(string.Format("item[@name='{0}']", name));
+            if (encryptModeNode == null)
             {
-                XmlAttribute attr1 = item.Attributes["Name"];
-                XmlAttribute attr2 = item.Attributes["Url"];
-                XmlAttribute attr3 = item.Attributes["UserId"];
-                XmlAttribute attr4 = item.Attributes["Password"];
-                if (attr1 == null)
-                {
-                    continue;
-                }
-                if (attr1.Name == name)
-                {
-                    return data;
-                }
+                encryptModeNode = Document.CreateElement("item");
+                settings.AppendChild(encryptModeNode);
             }
-            return null;
+            XmlAttribute attr1 = encryptModeNode.Attributes["name"];
+            if (attr1 == null)
+            {
+                attr1 = Document.CreateAttribute("name");
+                encryptModeNode.Attributes.Append(attr1);
+            }
+            attr1.Value = name;
+            XmlAttribute attr2 = encryptModeNode.Attributes["value"];
+            if (attr2 == null)
+            {
+                attr2 = Document.CreateAttribute("value");
+                encryptModeNode.Attributes.Append(attr2);
+            }
+            attr2.Value = value;
         }
-        */
 
         public string JoinPath(string folder, string itemName)
         {
@@ -101,7 +122,7 @@ namespace Betarium.PassPause
             return currentPath + itemName;
         }
 
-        public ConfigItem GetItemData(string path)
+        public ConfigItem GetItem(string path)
         {
             XmlNode item = FindItemNode(path);
             if (item == null)
@@ -157,59 +178,11 @@ namespace Betarium.PassPause
                 XmlAttribute attr1 = item.Attributes["Name"];
                 string name = attr1.Value;
                 string path = JoinPath(folder, name);
-                ConfigItem data = GetItemData(path);
+                ConfigItem data = GetItem(path);
                 list.Add(data);
             }
             return list.ToArray();
         }
-
-        /*
-        public ConfigItem FindData(string path)
-        {
-            string[] pathItem = path.Split('\\');
-            string name = pathItem.Last();
-            ConfigItem[] list = GetListData(path);
-
-            foreach (var item in list)
-            {
-                if (item.Name == name)
-                {
-                    return item;
-                }
-            }
-            return null;
-        }
-        */
-
-        /*
-        public void AddData(ConfigData data)
-        {
-            XmlElement item = Document.CreateElement("item");
-            XmlNode folder = Document.SelectSingleNode("//PassPause/RootFolder");
-            folder.AppendChild(item);
-
-            XmlAttribute attr1 = Document.CreateAttribute("Name");
-            attr1.Value = data.Name;
-            XmlAttribute attr2 = Document.CreateAttribute("Url");
-            attr2.Value = data.Url;
-            XmlAttribute attr3 = Document.CreateAttribute("UserId");
-            attr3.Value = data.UserId;
-            XmlAttribute attr4 = Document.CreateAttribute("Password");
-            attr4.Value = data.Password;
-
-            item.Attributes.Append(attr1);
-            item.Attributes.Append(attr2);
-            item.Attributes.Append(attr3);
-            item.Attributes.Append(attr4);
-
-            if (!string.IsNullOrEmpty(data.Comment))
-            {
-                XmlElement comment = Document.CreateElement("comment");
-                comment.InnerText = data.Comment;
-                item.AppendChild(comment);
-            }
-        }
-         */
 
         private string GetParentPath(string path)
         {
@@ -332,6 +305,61 @@ namespace Betarium.PassPause
             item.ParentNode.RemoveChild(item);
         }
 
+        public void MoveItemUp(string path)
+        {
+            var item = FindItemNode(path);
+            var parent = item.ParentNode;
+            List<XmlNode> childNodes = new List<XmlNode>();
+            foreach (XmlNode child in parent.ChildNodes)
+            {
+                childNodes.Add(child);
+            }
+
+            for (int i = 1; i < childNodes.Count; i++)
+            {
+                if (childNodes[i] == item)
+                {
+                    var old = childNodes[i - 1];
+                    childNodes[i - 1] = item;
+                    childNodes[i] = old;
+                }
+            }
+
+            parent.RemoveAll();
+            foreach (var child in childNodes)
+            {
+                parent.AppendChild(child);
+            }
+        }
+
+        public void MoveItemDown(string path)
+        {
+            var item = FindItemNode(path);
+            var parent = item.ParentNode;
+            List<XmlNode> childNodes = new List<XmlNode>();
+            foreach (XmlNode child in parent.ChildNodes)
+            {
+                childNodes.Add(child);
+            }
+
+            for (int i = 0; i < childNodes.Count - 1; i++)
+            {
+                if (childNodes[i] == item)
+                {
+                    var old = childNodes[i + 1];
+                    childNodes[i + 1] = item;
+                    childNodes[i] = old;
+                    i++;
+                }
+            }
+
+            parent.RemoveAll();
+            foreach (var child in childNodes)
+            {
+                parent.AppendChild(child);
+            }
+        }
+
         private void MakeKey(string encryptKey, out byte[] aesIV, out byte[] aesKey)
         {
             byte[] encryptKey2 = Encoding.UTF8.GetBytes(encryptKey);
@@ -343,6 +371,19 @@ namespace Betarium.PassPause
         }
 
         private string EncryptText(string value)
+        {
+            if (EncryptMode == EncryptModeOption.AES)
+            {
+                value = EncryptTextAes(value);
+            }
+            else if (EncryptMode == EncryptModeOption.UrlEncode)
+            {
+                value = Uri.EscapeDataString(value);
+            }
+            return value;
+        }
+
+        private string EncryptTextAes(string value)
         {
             if (value == null)
             {
@@ -371,6 +412,19 @@ namespace Betarium.PassPause
         }
 
         private string DecryptText(string value)
+        {
+            if (EncryptMode == EncryptModeOption.AES)
+            {
+                value = DecryptTextAes(value);
+            }
+            else if (EncryptMode == EncryptModeOption.UrlEncode)
+            {
+                value = Uri.UnescapeDataString(value);
+            }
+            return value;
+        }
+
+        private string DecryptTextAes(string value)
         {
             if (value == null)
             {
