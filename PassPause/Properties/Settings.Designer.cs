@@ -46,5 +46,17 @@ namespace Betarium.PassPause.Properties {
                 this["EncryptKey"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LoginUserId {
+            get {
+                return ((string)(this["LoginUserId"]));
+            }
+            set {
+                this["LoginUserId"] = value;
+            }
+        }
     }
 }

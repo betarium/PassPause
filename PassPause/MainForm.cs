@@ -23,30 +23,64 @@ namespace Betarium.PassPause
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            AccountName.ReadOnly = false;
+            //WindowState = FormWindowState.Minimized;
+            //AccountName.ReadOnly = false;
             Comment.Enabled = false;
 
             FolderTree.ShowRootLines = false;
             TreeNode rootNode = FolderTree.Nodes.Add("Default");
             //TreeNode rootNode2 = FolderTree.Nodes.Add("Share");
 
+            TrayIcon.Text = Application.ProductName;
+#if DEBUG
+            TrayIcon.Text = TrayIcon.Text + " (DEBUG)";
+#endif
+
             if (string.IsNullOrEmpty(Properties.Settings.Default.EncryptKey))
             {
-                Random rand = new Random();
-                byte[] buf = new byte[16];
-                for (int i = 0; i < 16; i++)
-                {
-                    buf[i] = (byte)rand.Next(256);
-                }
-                string encryptKey = Convert.ToBase64String(buf);
+                Show();
 
-                Properties.Settings.Default.EncryptKey = encryptKey;
-                Properties.Settings.Default.Save();
+                if (!InitPassword())
+                {
+                    Close();
+                    return;
+                }
+
+                //Random rand = new Random();
+                //byte[] buf = new byte[16];
+                //for (int i = 0; i < 16; i++)
+                //{
+                //    buf[i] = (byte)rand.Next(256);
+                //}
+                //string encryptKey = Convert.ToBase64String(buf);
+
+                //Properties.Settings.Default.EncryptKey = encryptKey;
+                //Properties.Settings.Default.Save();
             }
 
-            FilePath = Path.Combine(Application.StartupPath, "PassPause.xml");
+            var loginForm = new LoginForm();
+            loginForm.UserIdField.Text = Environment.UserName;
+            loginForm.Auth += LoginForm_Auth;
+            if (loginForm.ShowDialog() != DialogResult.OK)
+            {
+                Close();
+                return;
+            }
+
+            string documentFolder = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            string configFolder = Path.Combine(documentFolder, Application.ProductName);
+            if (!Directory.Exists(configFolder))
+            {
+                Directory.CreateDirectory(configFolder);
+            }
+            FilePath = Path.Combine(configFolder, "Default.xml");
             Config = new ConfigAccess();
-            Config.EncryptKey = Properties.Settings.Default.EncryptKey;
+
+            EncryptManager manager = new EncryptManager();
+            manager.EncryptKey = System.Environment.UserName;
+            string password2 = manager.DecryptText(Properties.Settings.Default.EncryptKey);
+
+            Config.EncryptKey = password2;
 
             if (File.Exists(FilePath))
             {
@@ -55,6 +89,54 @@ namespace Betarium.PassPause
 
             MakeTree(rootNode, "/");
             rootNode.Expand();
+
+            if (WindowState != FormWindowState.Minimized)
+            {
+                Show();
+            }
+        }
+
+        void LoginForm_Auth(LoginForm.AuthEventArgs e)
+        {
+            if (e.UserId.Length == 0 || e.Password.Length == 0)
+            {
+                return;
+            }
+
+            string userId = Properties.Settings.Default.LoginUserId;
+            string password = Properties.Settings.Default.LoginPassword;
+            if (userId.Length == 0)
+            {
+                Properties.Settings.Default.LoginUserId = e.UserId;
+                Properties.Settings.Default.LoginPassword = e.Password;
+                Properties.Settings.Default.Save();
+                e.Success = true;
+                return;
+            }
+            if (e.UserId != userId || e.Password != password)
+            {
+                return;
+            }
+            e.Success = true;
+        }
+
+        private bool InitPassword()
+        {
+            PasswordForm passwordForm = new PasswordForm();
+            if (passwordForm.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
+            {
+                return false;
+            }
+
+            string password = passwordForm.Password;
+
+            EncryptManager manager = new EncryptManager();
+            manager.EncryptKey = System.Environment.UserName;
+            string password2 = manager.EncryptText(password);
+
+            Properties.Settings.Default.EncryptKey = password2;
+            Properties.Settings.Default.Save();
+            return true;
         }
 
         private void MakeTree(TreeNode currentNode, string path)
@@ -78,16 +160,24 @@ namespace Betarium.PassPause
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            SaveItem();
-            if (File.Exists(FilePath))
+            if (Config != null)
             {
-                File.Copy(FilePath, FilePath + "." + DateTime.Now.ToString("yyyyMMddHHmmss") + ".bak", true);
+                SaveItem();
+                if (File.Exists(FilePath))
+                {
+                    File.Copy(FilePath, FilePath + "." + DateTime.Now.ToString("yyyyMMddHHmmss") + ".bak", true);
+                }
+                Config.Save(FilePath);
             }
-            Config.Save(FilePath);
         }
 
         private void FolderTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            if (Config == null)
+            {
+                return;
+            }
+
             AccountName.Text = "";
             AccoutUrl.Text = "";
             UserId.Text = "";
@@ -438,6 +528,38 @@ namespace Betarium.PassPause
 
             string currentPath = GetCurrentPath();
             Config.MoveItemDown(currentPath);
+        }
+
+        private void TrayIcon_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                Show();
+                if (WindowState == FormWindowState.Minimized)
+                {
+                    WindowState = FormWindowState.Normal;
+                }
+            }
+            else if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            {
+                Close();
+            }
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized && Visible)
+            {
+                Visible = false;
+            }
+        }
+
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized && Visible)
+            {
+                Visible = false;
+            }
         }
     }
 }

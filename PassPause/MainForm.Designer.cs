@@ -36,6 +36,9 @@
             this.addMenuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addFolderMenuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.moveUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -50,9 +53,6 @@
             this.AccoutUrl = new System.Windows.Forms.TextBox();
             this.UrlField = new System.Windows.Forms.Label();
             this.AccountName = new System.Windows.Forms.TextBox();
-            this.moveUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.moveDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.FolderTreeMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -64,6 +64,7 @@
             // 
             this.TrayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("TrayIcon.Icon")));
             this.TrayIcon.Visible = true;
+            this.TrayIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TrayIcon_MouseClick);
             // 
             // menuStrip1
             // 
@@ -84,7 +85,7 @@
             this.toolStripSeparator2,
             this.deleteToolStripMenuItem});
             this.FolderTreeMenu.Name = "contextMenuStrip1";
-            this.FolderTreeMenu.Size = new System.Drawing.Size(163, 148);
+            this.FolderTreeMenu.Size = new System.Drawing.Size(163, 126);
             this.FolderTreeMenu.Opening += new System.ComponentModel.CancelEventHandler(this.FolderTreeMenu_Opening);
             // 
             // addMenuToolStripMenuItem
@@ -105,6 +106,25 @@
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(159, 6);
+            // 
+            // moveUpToolStripMenuItem
+            // 
+            this.moveUpToolStripMenuItem.Name = "moveUpToolStripMenuItem";
+            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.moveUpToolStripMenuItem.Text = "上に移動(&U)";
+            this.moveUpToolStripMenuItem.Click += new System.EventHandler(this.moveUpToolStripMenuItem_Click);
+            // 
+            // moveDownToolStripMenuItem
+            // 
+            this.moveDownToolStripMenuItem.Name = "moveDownToolStripMenuItem";
+            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.moveDownToolStripMenuItem.Text = "下に移動(&N)";
+            this.moveDownToolStripMenuItem.Click += new System.EventHandler(this.moveDownToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(159, 6);
             // 
             // deleteToolStripMenuItem
             // 
@@ -145,7 +165,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.AccountName);
             this.splitContainer1.Size = new System.Drawing.Size(504, 282);
             this.splitContainer1.SplitterDistance = 168;
-            this.splitContainer1.TabIndex = 3;
+            this.splitContainer1.TabIndex = 1;
             // 
             // FolderTree
             // 
@@ -164,7 +184,7 @@
             this.CopyPasswordButton.Location = new System.Drawing.Point(263, 100);
             this.CopyPasswordButton.Name = "CopyPasswordButton";
             this.CopyPasswordButton.Size = new System.Drawing.Size(57, 23);
-            this.CopyPasswordButton.TabIndex = 6;
+            this.CopyPasswordButton.TabIndex = 8;
             this.CopyPasswordButton.Text = "Copy";
             this.CopyPasswordButton.UseVisualStyleBackColor = true;
             this.CopyPasswordButton.Click += new System.EventHandler(this.CopyPasswordButton_Click);
@@ -185,14 +205,14 @@
             this.Comment.Multiline = true;
             this.Comment.Name = "Comment";
             this.Comment.Size = new System.Drawing.Size(305, 132);
-            this.Comment.TabIndex = 4;
+            this.Comment.TabIndex = 9;
             // 
             // Password
             // 
             this.Password.Location = new System.Drawing.Point(90, 102);
             this.Password.Name = "Password";
             this.Password.Size = new System.Drawing.Size(167, 19);
-            this.Password.TabIndex = 3;
+            this.Password.TabIndex = 7;
             this.Password.UseSystemPasswordChar = true;
             // 
             // label3
@@ -201,7 +221,7 @@
             this.label3.Location = new System.Drawing.Point(13, 105);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(54, 12);
-            this.label3.TabIndex = 2;
+            this.label3.TabIndex = 6;
             this.label3.Text = "Password";
             // 
             // UserId
@@ -209,7 +229,7 @@
             this.UserId.Location = new System.Drawing.Point(90, 77);
             this.UserId.Name = "UserId";
             this.UserId.Size = new System.Drawing.Size(167, 19);
-            this.UserId.TabIndex = 3;
+            this.UserId.TabIndex = 4;
             // 
             // label2
             // 
@@ -217,7 +237,7 @@
             this.label2.Location = new System.Drawing.Point(13, 80);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(44, 12);
-            this.label2.TabIndex = 2;
+            this.label2.TabIndex = 3;
             this.label2.Text = "User ID";
             // 
             // AccoutUrl
@@ -225,7 +245,7 @@
             this.AccoutUrl.Location = new System.Drawing.Point(90, 41);
             this.AccoutUrl.Name = "AccoutUrl";
             this.AccoutUrl.Size = new System.Drawing.Size(230, 19);
-            this.AccoutUrl.TabIndex = 3;
+            this.AccoutUrl.TabIndex = 2;
             // 
             // UrlField
             // 
@@ -233,7 +253,7 @@
             this.UrlField.Location = new System.Drawing.Point(13, 44);
             this.UrlField.Name = "UrlField";
             this.UrlField.Size = new System.Drawing.Size(27, 12);
-            this.UrlField.TabIndex = 2;
+            this.UrlField.TabIndex = 1;
             this.UrlField.Text = "URL";
             // 
             // AccountName
@@ -243,26 +263,7 @@
             this.AccountName.Location = new System.Drawing.Point(15, 12);
             this.AccountName.Name = "AccountName";
             this.AccountName.Size = new System.Drawing.Size(305, 19);
-            this.AccountName.TabIndex = 1;
-            // 
-            // moveUpToolStripMenuItem
-            // 
-            this.moveUpToolStripMenuItem.Name = "moveUpToolStripMenuItem";
-            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.moveUpToolStripMenuItem.Text = "上に移動(&U)";
-            this.moveUpToolStripMenuItem.Click += new System.EventHandler(this.moveUpToolStripMenuItem_Click);
-            // 
-            // moveDownToolStripMenuItem
-            // 
-            this.moveDownToolStripMenuItem.Name = "moveDownToolStripMenuItem";
-            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.moveDownToolStripMenuItem.Text = "下に移動(&N)";
-            this.moveDownToolStripMenuItem.Click += new System.EventHandler(this.moveDownToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(159, 6);
+            this.AccountName.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -280,6 +281,8 @@
             this.Text = "PassPause";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.FolderTreeMenu.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
