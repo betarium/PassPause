@@ -13,6 +13,8 @@ namespace Betarium.PassPause
 {
     public partial class MainForm : Form
     {
+        public string ConfigFolder { get; set; }
+        public bool IsLogin { get; set; }
         public string FilePath { get; set; }
         public ConfigAccess Config { get; set; }
 
@@ -23,13 +25,9 @@ namespace Betarium.PassPause
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            //WindowState = FormWindowState.Minimized;
-            //AccountName.ReadOnly = false;
             Comment.Enabled = false;
 
             FolderTree.ShowRootLines = false;
-            TreeNode rootNode = FolderTree.Nodes.Add("Default");
-            //TreeNode rootNode2 = FolderTree.Nodes.Add("Share");
 
             TrayIcon.Text = Application.ProductName;
 #if DEBUG
@@ -58,45 +56,56 @@ namespace Betarium.PassPause
                 //Properties.Settings.Default.Save();
             }
 
-            var loginForm = new LoginForm();
-            loginForm.UserIdField.Text = Environment.UserName;
-            loginForm.Auth += LoginForm_Auth;
-            if (loginForm.ShowDialog() != DialogResult.OK)
-            {
-                Close();
-                return;
-            }
-
             string documentFolder = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             string configFolder = Path.Combine(documentFolder, Application.ProductName);
             if (!Directory.Exists(configFolder))
             {
                 Directory.CreateDirectory(configFolder);
             }
-            FilePath = Path.Combine(configFolder, "Default.xml");
-            Config = new ConfigAccess();
+            ConfigFolder = configFolder;
+
+            if (WindowState != FormWindowState.Minimized)
+            {
+                if (!Login())
+                {
+                    Close();
+                    return;
+                }
+                Show();
+            }
+        }
+
+        private bool Login()
+        {
+            var loginForm = new LoginForm();
+            loginForm.UserIdField.Text = Environment.UserName;
+            loginForm.Auth += LoginForm_Auth;
+            if (loginForm.ShowDialog() != DialogResult.OK)
+            {
+                return false;
+            }
 
             EncryptManager manager = new EncryptManager();
             manager.EncryptKey = System.Environment.UserName;
             string password2 = manager.DecryptText(Properties.Settings.Default.EncryptKey);
 
+            Config = new ConfigAccess();
             Config.EncryptKey = password2;
 
+            FilePath = Path.Combine(ConfigFolder, "Default.xml");
             if (File.Exists(FilePath))
             {
                 Config.Load(FilePath);
             }
 
+            TreeNode rootNode = FolderTree.Nodes.Add("Default");
             MakeTree(rootNode, "/");
             rootNode.Expand();
-
-            if (WindowState != FormWindowState.Minimized)
-            {
-                Show();
-            }
+            IsLogin = true;
+            return true;
         }
 
-        void LoginForm_Auth(LoginForm.AuthEventArgs e)
+        private void LoginForm_Auth(LoginForm.AuthEventArgs e)
         {
             if (e.UserId.Length == 0 || e.Password.Length == 0)
             {
@@ -539,6 +548,10 @@ namespace Betarium.PassPause
                 {
                     WindowState = FormWindowState.Normal;
                 }
+                if (!IsLogin)
+                {
+                    Login();
+                }
             }
             else if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
@@ -556,6 +569,14 @@ namespace Betarium.PassPause
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
+            if (WindowState != FormWindowState.Minimized && Visible)
+            {
+                if (!IsLogin)
+                {
+                    Login();
+                }
+            }
+
             if (WindowState == FormWindowState.Minimized && Visible)
             {
                 Visible = false;

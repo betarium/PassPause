@@ -29,6 +29,7 @@ namespace Betarium.PassPause
             AES,
         };
 
+        public string FilePath { get; set; }
         public EncryptModeOption EncryptMode { get; set; }
         public string EncryptKey { private get; set; }
 
@@ -78,6 +79,7 @@ namespace Betarium.PassPause
             }
 
             Document = xml;
+            FilePath = filePath;
         }
 
         public void Save(string filePath)
