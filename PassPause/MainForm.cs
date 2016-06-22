@@ -320,7 +320,7 @@ namespace Betarium.PassPause
             string path = GetCurrentPath();
             var item = Config.GetItem(path);
 
-            bool IsRoot = (currentNode != null);
+            bool IsRoot = (FolderTree.TopNode == currentNode || FolderTree.TopNode == currentNode.Parent);
             bool IsItem = (currentNode != null) && (item != null) && (!item.IsDirectory);
             bool IsDirectory = (currentNode != null) && (item != null) && (item.IsDirectory);
 
@@ -467,7 +467,11 @@ namespace Betarium.PassPause
                 return;
             }
 
+            int oldIndex = currentNode.Index;
             currentNode.Remove();
+            parent.Nodes.Insert(oldIndex - 1, currentNode);
+
+            /*
             List<TreeNode> nodeList = new List<TreeNode>();
             foreach (TreeNode tmp in parent.Nodes)
             {
@@ -484,6 +488,8 @@ namespace Betarium.PassPause
                 }
                 parent.Nodes.Add(nodeList[i]);
             }
+            */
+
             FolderTree.SelectedNode = currentNode;
 
             string currentPath = GetCurrentPath();
@@ -510,6 +516,11 @@ namespace Betarium.PassPause
                 return;
             }
 
+            int oldIndex = currentNode.Index;
+            currentNode.Remove();
+            parent.Nodes.Insert(oldIndex + 1, currentNode);
+
+            /*
             currentNode.Remove();
             List<TreeNode> nodeList = new List<TreeNode>();
             foreach (TreeNode tmp in parent.Nodes)
@@ -533,6 +544,8 @@ namespace Betarium.PassPause
             {
                 parent.Nodes.Add(currentNode);
             }
+            */
+
             FolderTree.SelectedNode = currentNode;
 
             string currentPath = GetCurrentPath();

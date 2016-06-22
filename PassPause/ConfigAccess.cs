@@ -178,6 +178,10 @@ namespace Betarium.PassPause
             foreach (XmlNode item in currentNode)
             {
                 XmlAttribute attr1 = item.Attributes["Name"];
+                if (attr1 == null)
+                {
+                    continue;
+                }
                 string name = attr1.Value;
                 string path = JoinPath(folder, name);
                 ConfigItem data = GetItem(path);
@@ -311,6 +315,14 @@ namespace Betarium.PassPause
         {
             var item = FindItemNode(path);
             var parent = item.ParentNode;
+            var prev = item.PreviousSibling;
+            if (prev == null)
+            {
+                return;
+            }
+            parent.InsertBefore(item, prev);
+
+            /*
             List<XmlNode> childNodes = new List<XmlNode>();
             foreach (XmlNode child in parent.ChildNodes)
             {
@@ -332,12 +344,21 @@ namespace Betarium.PassPause
             {
                 parent.AppendChild(child);
             }
+            */
         }
 
         public void MoveItemDown(string path)
         {
             var item = FindItemNode(path);
             var parent = item.ParentNode;
+            var next = item.NextSibling;
+            if (next == null)
+            {
+                return;
+            }
+            parent.InsertAfter(item, next);
+
+            /*
             List<XmlNode> childNodes = new List<XmlNode>();
             foreach (XmlNode child in parent.ChildNodes)
             {
@@ -360,6 +381,7 @@ namespace Betarium.PassPause
             {
                 parent.AppendChild(child);
             }
+            */
         }
 
         private void MakeKey(string encryptKey, out byte[] aesIV, out byte[] aesKey)
