@@ -43,6 +43,8 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.FolderTree = new System.Windows.Forms.TreeView();
+            this.CopyLinkButton = new System.Windows.Forms.Button();
+            this.OpenLinkButton = new System.Windows.Forms.Button();
             this.CopyPasswordButton = new System.Windows.Forms.Button();
             this.CopyUserIdButton = new System.Windows.Forms.Button();
             this.Comment = new System.Windows.Forms.TextBox();
@@ -85,51 +87,51 @@
             this.toolStripSeparator2,
             this.deleteToolStripMenuItem});
             this.FolderTreeMenu.Name = "contextMenuStrip1";
-            this.FolderTreeMenu.Size = new System.Drawing.Size(163, 126);
+            this.FolderTreeMenu.Size = new System.Drawing.Size(158, 126);
             this.FolderTreeMenu.Opening += new System.ComponentModel.CancelEventHandler(this.FolderTreeMenu_Opening);
             // 
             // addMenuToolStripMenuItem
             // 
             this.addMenuToolStripMenuItem.Name = "addMenuToolStripMenuItem";
-            this.addMenuToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.addMenuToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.addMenuToolStripMenuItem.Text = "アイテムを追加(&A)";
             this.addMenuToolStripMenuItem.Click += new System.EventHandler(this.addMenuToolStripMenuItem_Click);
             // 
             // addFolderMenuToolStripMenuItem
             // 
             this.addFolderMenuToolStripMenuItem.Name = "addFolderMenuToolStripMenuItem";
-            this.addFolderMenuToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.addFolderMenuToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.addFolderMenuToolStripMenuItem.Text = "フォルダを追加(&F)";
             this.addFolderMenuToolStripMenuItem.Click += new System.EventHandler(this.addFolderMenuToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(159, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(154, 6);
             // 
             // moveUpToolStripMenuItem
             // 
             this.moveUpToolStripMenuItem.Name = "moveUpToolStripMenuItem";
-            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.moveUpToolStripMenuItem.Text = "上に移動(&U)";
             this.moveUpToolStripMenuItem.Click += new System.EventHandler(this.moveUpToolStripMenuItem_Click);
             // 
             // moveDownToolStripMenuItem
             // 
             this.moveDownToolStripMenuItem.Name = "moveDownToolStripMenuItem";
-            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.moveDownToolStripMenuItem.Text = "下に移動(&N)";
             this.moveDownToolStripMenuItem.Click += new System.EventHandler(this.moveDownToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(159, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(154, 6);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.deleteToolStripMenuItem.Text = "削除(&D)";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
@@ -153,6 +155,8 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.CopyLinkButton);
+            this.splitContainer1.Panel2.Controls.Add(this.OpenLinkButton);
             this.splitContainer1.Panel2.Controls.Add(this.CopyPasswordButton);
             this.splitContainer1.Panel2.Controls.Add(this.CopyUserIdButton);
             this.splitContainer1.Panel2.Controls.Add(this.Comment);
@@ -179,9 +183,29 @@
             this.FolderTree.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.FolderTree_BeforeSelect);
             this.FolderTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.FolderTree_AfterSelect);
             // 
+            // CopyLinkButton
+            // 
+            this.CopyLinkButton.Location = new System.Drawing.Point(263, 61);
+            this.CopyLinkButton.Name = "CopyLinkButton";
+            this.CopyLinkButton.Size = new System.Drawing.Size(57, 23);
+            this.CopyLinkButton.TabIndex = 11;
+            this.CopyLinkButton.Text = "Copy";
+            this.CopyLinkButton.UseVisualStyleBackColor = true;
+            this.CopyLinkButton.Click += new System.EventHandler(this.CopyLinkButton_Click);
+            // 
+            // OpenLinkButton
+            // 
+            this.OpenLinkButton.Location = new System.Drawing.Point(198, 61);
+            this.OpenLinkButton.Name = "OpenLinkButton";
+            this.OpenLinkButton.Size = new System.Drawing.Size(59, 23);
+            this.OpenLinkButton.TabIndex = 10;
+            this.OpenLinkButton.Text = "Open";
+            this.OpenLinkButton.UseVisualStyleBackColor = true;
+            this.OpenLinkButton.Click += new System.EventHandler(this.OpenLinkButton_Click);
+            // 
             // CopyPasswordButton
             // 
-            this.CopyPasswordButton.Location = new System.Drawing.Point(263, 100);
+            this.CopyPasswordButton.Location = new System.Drawing.Point(263, 115);
             this.CopyPasswordButton.Name = "CopyPasswordButton";
             this.CopyPasswordButton.Size = new System.Drawing.Size(57, 23);
             this.CopyPasswordButton.TabIndex = 8;
@@ -191,7 +215,7 @@
             // 
             // CopyUserIdButton
             // 
-            this.CopyUserIdButton.Location = new System.Drawing.Point(263, 75);
+            this.CopyUserIdButton.Location = new System.Drawing.Point(263, 90);
             this.CopyUserIdButton.Name = "CopyUserIdButton";
             this.CopyUserIdButton.Size = new System.Drawing.Size(57, 23);
             this.CopyUserIdButton.TabIndex = 5;
@@ -201,15 +225,15 @@
             // 
             // Comment
             // 
-            this.Comment.Location = new System.Drawing.Point(15, 136);
+            this.Comment.Location = new System.Drawing.Point(15, 156);
             this.Comment.Multiline = true;
             this.Comment.Name = "Comment";
-            this.Comment.Size = new System.Drawing.Size(305, 132);
+            this.Comment.Size = new System.Drawing.Size(305, 112);
             this.Comment.TabIndex = 9;
             // 
             // Password
             // 
-            this.Password.Location = new System.Drawing.Point(90, 102);
+            this.Password.Location = new System.Drawing.Point(90, 117);
             this.Password.Name = "Password";
             this.Password.Size = new System.Drawing.Size(167, 19);
             this.Password.TabIndex = 7;
@@ -218,7 +242,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(13, 105);
+            this.label3.Location = new System.Drawing.Point(13, 120);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(54, 12);
             this.label3.TabIndex = 6;
@@ -226,7 +250,7 @@
             // 
             // UserId
             // 
-            this.UserId.Location = new System.Drawing.Point(90, 77);
+            this.UserId.Location = new System.Drawing.Point(90, 92);
             this.UserId.Name = "UserId";
             this.UserId.Size = new System.Drawing.Size(167, 19);
             this.UserId.TabIndex = 4;
@@ -234,7 +258,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 80);
+            this.label2.Location = new System.Drawing.Point(13, 95);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(44, 12);
             this.label2.TabIndex = 3;
@@ -319,6 +343,8 @@
         private System.Windows.Forms.ToolStripMenuItem moveUpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem moveDownToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.Button CopyLinkButton;
+        private System.Windows.Forms.Button OpenLinkButton;
     }
 }
 

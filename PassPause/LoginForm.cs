@@ -58,8 +58,10 @@ namespace Betarium.PassPause
 
         private void LoginForm_Load(object sender, EventArgs e)
         {
+            Text = Text + " - " + Application.ProductName;
             CenterToScreen();
             Activate();
+            ActiveControl = PasswordField;
         }
 
         private void CancelButton_Click(object sender, EventArgs e)

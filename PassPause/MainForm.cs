@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -594,6 +596,53 @@ namespace Betarium.PassPause
             {
                 Visible = false;
             }
+        }
+
+        private void OpenLinkButton_Click(object sender, EventArgs e)
+        {
+            var currentNode = FolderTree.SelectedNode;
+            if (currentNode == null)
+            {
+                return;
+            }
+
+            string value = AccoutUrl.Text;
+            if (string.IsNullOrEmpty(value))
+            {
+                return;
+            }
+            if (value.StartsWith("rdp:"))
+            {
+                string path = Regex.Replace(value, "^rdp:", "");
+                string command = Environment.ExpandEnvironmentVariables(@"%windir%\system32\mstsc.exe");
+                using (var process = Process.Start(command, "/v:" + path)) { }
+                return;
+            }
+            try
+            {
+                using (var process = Process.Start(value)) { }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("実行できません。" + ex.Message, Application.ProductName);
+            }
+        }
+
+        private void CopyLinkButton_Click(object sender, EventArgs e)
+        {
+            var currentNode = FolderTree.SelectedNode;
+            if (currentNode == null)
+            {
+                return;
+            }
+
+            string value = AccoutUrl.Text;
+            if (string.IsNullOrEmpty(value))
+            {
+                Clipboard.Clear();
+                return;
+            }
+            Clipboard.SetText(value);
         }
     }
 }

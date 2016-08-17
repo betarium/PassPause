@@ -33,7 +33,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.PasswordField = new System.Windows.Forms.TextBox();
             this.EnterButton = new System.Windows.Forms.Button();
-            this.CancelButton = new System.Windows.Forms.Button();
+            this.CloseButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // UserIdLabel
@@ -79,15 +79,16 @@
             this.EnterButton.UseVisualStyleBackColor = true;
             this.EnterButton.Click += new System.EventHandler(this.EnterButton_Click);
             // 
-            // CancelButton
+            // CloseButton
             // 
-            this.CancelButton.Location = new System.Drawing.Point(169, 93);
-            this.CancelButton.Name = "CancelButton";
-            this.CancelButton.Size = new System.Drawing.Size(75, 23);
-            this.CancelButton.TabIndex = 5;
-            this.CancelButton.Text = "キャンセル";
-            this.CancelButton.UseVisualStyleBackColor = true;
-            this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
+            this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.CloseButton.Location = new System.Drawing.Point(169, 93);
+            this.CloseButton.Name = "CloseButton";
+            this.CloseButton.Size = new System.Drawing.Size(75, 23);
+            this.CloseButton.TabIndex = 5;
+            this.CloseButton.Text = "キャンセル";
+            this.CloseButton.UseVisualStyleBackColor = true;
+            this.CloseButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
             // LoginForm
             // 
@@ -95,7 +96,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(256, 128);
-            this.Controls.Add(this.CancelButton);
+            this.Controls.Add(this.CloseButton);
             this.Controls.Add(this.EnterButton);
             this.Controls.Add(this.PasswordField);
             this.Controls.Add(this.label2);
@@ -118,7 +119,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox PasswordField;
         private System.Windows.Forms.Button EnterButton;
-        private System.Windows.Forms.Button CancelButton;
+        private System.Windows.Forms.Button CloseButton;
         public System.Windows.Forms.TextBox UserIdField;
     }
 }
