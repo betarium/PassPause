@@ -182,7 +182,16 @@ namespace Betarium.PassPause
                 SaveItem();
                 if (File.Exists(FilePath))
                 {
-                    File.Copy(FilePath, FilePath + "." + DateTime.Now.ToString("yyyyMMddHHmmss") + ".bak", true);
+                    string backupFile = FilePath + ".bak";
+                    if (File.Exists(backupFile))
+                    {
+                        string backupFile2 = backupFile + "." + DateTime.Now.ToString("yyyyMMdd") + ".bak";
+                        if (!File.Exists(backupFile2))
+                        {
+                            File.Copy(backupFile, backupFile2, true);
+                        }
+                    }
+                    File.Copy(FilePath, backupFile, true);
                 }
                 Config.Save(FilePath);
             }
