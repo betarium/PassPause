@@ -225,6 +225,8 @@
             // 
             // Comment
             // 
+            this.Comment.AcceptsReturn = true;
+            this.Comment.AcceptsTab = true;
             this.Comment.Location = new System.Drawing.Point(15, 156);
             this.Comment.Multiline = true;
             this.Comment.Name = "Comment";

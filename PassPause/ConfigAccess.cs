@@ -132,22 +132,29 @@ namespace Betarium.PassPause
                 return null;
             }
 
+            XmlAttribute attr1 = item.Attributes["Name"];
+            if (attr1 == null)
+            {
+                return null;
+            }
+
             if (item.Name == "item")
             {
-                XmlAttribute attr1 = item.Attributes["Name"];
+                //XmlAttribute attr1 = item.Attributes["Name"];
                 XmlAttribute attr2 = item.Attributes["Url"];
                 XmlAttribute attr3 = item.Attributes["UserId"];
                 XmlAttribute attr4 = item.Attributes["Password"];
-                if (attr1 == null)
-                {
-                    return null;
-                }
+                //if (attr1 == null)
+                //{
+                //    return null;
+                //}
 
                 ConfigItem data = new ConfigItem();
                 data.Name = attr1.Value;
                 data.Url = (attr2 != null ? attr2.Value : null);
                 data.UserId = (attr3 != null ? attr3.Value : null);
                 data.Password = (attr4 != null ? attr4.Value : null);
+                data.Comment = GetItemComment(item);
 
                 data.UserId = DecryptText(data.UserId);
                 data.Password = DecryptText(data.Password);
@@ -156,17 +163,25 @@ namespace Betarium.PassPause
             }
             else if (item.Name == "folder")
             {
-                XmlAttribute attr1 = item.Attributes["Name"];
-                if (attr1 == null)
-                {
-                    return null;
-                }
                 ConfigItem data = new ConfigItem();
                 data.IsDirectory = true;
                 data.Name = attr1.Value;
+                data.Comment = GetItemComment(item);
                 return data;
             }
 
+            return null;
+        }
+
+        protected string GetItemComment(XmlNode item)
+        {
+            foreach (XmlElement child in item.ChildNodes)
+            {
+                if (child.Name == "comment")
+                {
+                    return child.InnerText;
+                }
+            }
             return null;
         }
 
@@ -262,25 +277,26 @@ namespace Betarium.PassPause
             var item = FindItemNode(path);
             if (item == null)
             {
-                item = Document.CreateElement("item");
                 if (data.IsDirectory)
                 {
                     item = Document.CreateElement("folder");
                 }
+                else
+                {
+                    item = Document.CreateElement("item");
+                }
                 parentFolder.AppendChild(item);
             }
 
-            if (data.IsDirectory)
-            {
-                XmlAttribute attr1 = Document.CreateAttribute("Name");
-                attr1.Value = data.Name;
+            XmlAttribute attr1 = Document.CreateAttribute("Name");
+            attr1.Value = data.Name;
 
-                item.Attributes.SetNamedItem(attr1);
-            }
-            else
+            item.Attributes.SetNamedItem(attr1);
+
+            if (!data.IsDirectory)
             {
-                XmlAttribute attr1 = Document.CreateAttribute("Name");
-                attr1.Value = data.Name;
+                //XmlAttribute attr1 = Document.CreateAttribute("Name");
+                //attr1.Value = data.Name;
                 XmlAttribute attr2 = Document.CreateAttribute("Url");
                 attr2.Value = data.Url;
                 XmlAttribute attr3 = Document.CreateAttribute("UserId");
@@ -291,17 +307,38 @@ namespace Betarium.PassPause
                 attr3.Value = EncryptText(attr3.Value);
                 attr4.Value = EncryptText(attr4.Value);
 
-                item.Attributes.SetNamedItem(attr1);
+                //item.Attributes.SetNamedItem(attr1);
                 item.Attributes.SetNamedItem(attr2);
                 item.Attributes.SetNamedItem(attr3);
                 item.Attributes.SetNamedItem(attr4);
+            }
 
-                if (!string.IsNullOrEmpty(data.Comment))
+            SetItemComment(item, data.Comment);
+        }
+
+        protected void SetItemComment(XmlNode item, string comment)
+        {
+            if (!string.IsNullOrEmpty(comment) && item.HasChildNodes)
+            {
+                var oldList = new List<XmlElement>();
+                foreach (XmlElement child in item.ChildNodes)
                 {
-                    XmlElement comment = Document.CreateElement("comment");
-                    comment.InnerText = data.Comment;
-                    item.AppendChild(comment);
+                    if (child.Name == "comment")
+                    {
+                        oldList.Add(child);
+                    }
                 }
+                foreach (var child in oldList)
+                {
+                    item.RemoveChild(child);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(comment))
+            {
+                XmlElement commentNode = Document.CreateElement("comment");
+                commentNode.InnerText = comment;
+                item.AppendChild(commentNode);
             }
         }
 

@@ -184,11 +184,6 @@ namespace Betarium.PassPause
 
         private void FolderTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (Config == null)
-            {
-                return;
-            }
-
             AccountName.Text = "";
             AccoutUrl.Text = "";
             UserId.Text = "";
@@ -200,6 +195,11 @@ namespace Betarium.PassPause
             UserId.Enabled = false;
             Password.Enabled = false;
             Comment.Enabled = false;
+
+            if (Config == null)
+            {
+                return;
+            }
 
             var node = FolderTree.SelectedNode;
             if (node == null)
@@ -219,6 +219,8 @@ namespace Betarium.PassPause
             {
                 AccountName.Enabled = true;
                 AccountName.Text = config.Name;
+                Comment.Enabled = true;
+                Comment.Text = config.Comment;
                 return;
             }
 
@@ -226,12 +228,13 @@ namespace Betarium.PassPause
             AccoutUrl.Enabled = true;
             UserId.Enabled = true;
             Password.Enabled = true;
-            //Comment.Enabled = true;
+            Comment.Enabled = true;
 
             AccountName.Text = config.Name;
             AccoutUrl.Text = config.Url;
             UserId.Text = config.UserId;
             Password.Text = config.Password;
+            Comment.Text = config.Comment;
         }
 
         private void FolderTree_BeforeSelect(object sender, TreeViewCancelEventArgs e)
@@ -263,6 +266,7 @@ namespace Betarium.PassPause
             config.Url = AccoutUrl.Text;
             config.UserId = UserId.Text;
             config.Password = Password.Text;
+            config.Comment = Comment.Text;
 
             if (string.IsNullOrEmpty(config.Name))
             {
