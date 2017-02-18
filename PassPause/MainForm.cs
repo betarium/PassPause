@@ -109,6 +109,7 @@ namespace Betarium.PassPause
             TreeNode rootNode = FolderTree.Nodes.Add("Default");
             MakeTree(rootNode, "/");
             rootNode.Expand();
+            FolderTree.SelectedNode = rootNode;
             IsLogin = true;
             return true;
         }
@@ -230,6 +231,13 @@ namespace Betarium.PassPause
                 return;
             }
 
+            if (config.IsRoot)
+            {
+                Comment.Enabled = true;
+                Comment.Text = config.Comment;
+                return;
+            }
+
             if (config.IsDirectory)
             {
                 AccountName.Enabled = true;
@@ -277,6 +285,14 @@ namespace Betarium.PassPause
             {
                 return;
             }
+
+            if (config.IsRoot)
+            {
+                config.Comment = Comment.Text;
+                Config.SetItem(itemPath, config);
+                return;
+            }
+
             config.Name = AccountName.Text;
             config.Url = AccoutUrl.Text;
             config.UserId = UserId.Text;

@@ -15,6 +15,7 @@ namespace Betarium.PassPause
         {
             public string Name { get; set; }
             public bool IsDirectory { get; set; }
+            public bool IsRoot { get; set; }
             public string Url { get; set; }
             public string UserId { get; set; }
             public string Password { get; set; }
@@ -182,6 +183,16 @@ namespace Betarium.PassPause
             if (item == null)
             {
                 return null;
+            }
+
+            if (item.Name == "RootFolder")
+            {
+                ConfigItem data = new ConfigItem();
+                data.IsDirectory = true;
+                data.IsRoot = true;
+                data.Name = "/";
+                data.Comment = GetItemComment(item);
+                return data;
             }
 
             XmlAttribute attr1 = item.Attributes["Name"];
