@@ -22,16 +22,17 @@ namespace Betarium.PassPause
         {
             if (string.IsNullOrEmpty(PasswordField.Text))
             {
+                MessageBox.Show("パスワードを入力してください。");
+                return;
+            }
+            else if (PasswordField.Text != PasswordConfirmField.Text)
+            {
+                MessageBox.Show("パスワード（確認）と一致しません。");
                 return;
             }
             Password = PasswordField.Text;
             DialogResult = System.Windows.Forms.DialogResult.OK;
             Close();
-        }
-
-        private void PasswordField_TextChanged(object sender, EventArgs e)
-        {
-            OkButton.Enabled = !string.IsNullOrEmpty(PasswordField.Text);
         }
     }
 }
