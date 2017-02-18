@@ -91,14 +91,20 @@ namespace Betarium.PassPause
             manager.EncryptKey = System.Environment.UserName;
             string password2 = manager.DecryptText(Properties.Settings.Default.EncryptKey);
 
-            Config = new ConfigAccess();
-            Config.EncryptKey = password2;
+            var configNew = new ConfigAccess();
+            configNew.EncryptKey = password2;
 
             FilePath = Path.Combine(ConfigFolder, "Default.xml");
             if (File.Exists(FilePath))
             {
-                Config.Load(FilePath);
+                if (!configNew.Load(FilePath))
+                {
+                    MessageBox.Show("ファイルの読み込みに失敗しました。");
+                    return false;
+                }
             }
+
+            Config = configNew;
 
             TreeNode rootNode = FolderTree.Nodes.Add("Default");
             MakeTree(rootNode, "/");

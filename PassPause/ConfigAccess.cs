@@ -59,9 +59,11 @@ namespace Betarium.PassPause
 
             XmlElement rootFolder = Document.CreateElement("RootFolder");
             root.AppendChild(rootFolder);
+
+            InitSetting(true);
         }
 
-        public void Load(string filePath)
+        public bool Load(string filePath)
         {
             XmlDocument xml = new XmlDocument();
             xml.Load(filePath);
@@ -69,24 +71,59 @@ namespace Betarium.PassPause
             XmlNode rootFolder = xml.SelectSingleNode("//PassPause/RootFolder");
             if (rootFolder == null)
             {
-                return;
+                return false;
             }
 
             XmlNode settings = xml.SelectSingleNode("//PassPause/Settings");
             if (settings == null)
             {
-                return;
+                return false;
             }
 
             Document = xml;
+
+            string checkCode = GetSetting("CheckCode");
+            string checkHash = GetSetting("CheckHash");
+
+            if (!string.IsNullOrEmpty(checkCode))
+            {
+                string hash = ConvertCheckCodeToHash(checkCode);
+
+                if (hash != checkHash)
+                {
+                    return false;
+                }
+            }
+
             FilePath = filePath;
+            return true;
         }
 
         public void Save(string filePath)
         {
-            SetSetting("EncryptMode", EncryptMode.ToString());
+            //SetSetting("EncryptMode", EncryptMode.ToString());
+
+            InitSetting(false);
 
             Document.Save(filePath);
+        }
+
+        private void InitSetting(bool create)
+        {
+            SetSetting("FileVersion", "1.0");
+            SetSetting("EncryptMode", EncryptMode.ToString());
+
+            string checkCodeOld = GetSetting("CheckCode");
+
+            if (create || string.IsNullOrEmpty(checkCodeOld))
+            {
+                var checkCode = GetRandamKey();
+
+                string hash = ConvertCheckCodeToHash(checkCode);
+
+                SetSetting("CheckCode", checkCode);
+                SetSetting("CheckHash", hash);
+            }
         }
 
         private void SetSetting(string name, string value)
@@ -112,6 +149,21 @@ namespace Betarium.PassPause
                 encryptModeNode.Attributes.Append(attr2);
             }
             attr2.Value = value;
+        }
+
+        private string GetSetting(string name)
+        {
+            XmlNode settings = Document.SelectSingleNode("//PassPause/Settings");
+            foreach (XmlElement child in settings.ChildNodes)
+            {
+                if (child.GetAttribute("name") == name)
+                {
+                    string value = child.GetAttribute("value");
+                    return value;
+                }
+            }
+
+            return null;
         }
 
         public string JoinPath(string folder, string itemName)
@@ -513,5 +565,27 @@ namespace Betarium.PassPause
             }
         }
 
+        private string GetRandamKey()
+        {
+            Random rand = new Random();
+            string result = "";
+            for (int i = 0; i < 20; i++)
+            {
+                result += Char.ConvertFromUtf32('A' + rand.Next() % 26);
+            }
+            return result;
+        }
+
+        private string ConvertCheckCodeToHash(string checkCode)
+        {
+            string hash1 = EncryptText(checkCode);
+
+            SHA256 cryptoService = new SHA256CryptoServiceProvider();
+            byte[] hash2 = Encoding.UTF8.GetBytes(hash1);
+            byte[] hash3 = cryptoService.ComputeHash(hash2);
+            string hash4 = Convert.ToBase64String(hash3);
+
+            return hash4;
+        }
     }
 }
