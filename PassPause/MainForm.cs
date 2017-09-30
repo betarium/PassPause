@@ -679,5 +679,16 @@ namespace Betarium.PassPause
             }
             Clipboard.SetText(value);
         }
+
+        private void passwordGenerateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PasswordGenerateForm form = new PasswordGenerateForm();
+            form.Show(this);
+        }
+
+        private void quitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
     }
 }

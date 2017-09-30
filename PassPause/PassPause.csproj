@@ -68,6 +68,13 @@
     <Compile Include="PasswordForm.Designer.cs">
       <DependentUpon>PasswordForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PasswordGenerateForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PasswordGenerateForm.Designer.cs">
+      <DependentUpon>PasswordGenerateForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PasswordGenerateManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="LoginForm.resx">
@@ -78,6 +85,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PasswordForm.resx">
       <DependentUpon>PasswordForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PasswordGenerateForm.resx">
+      <DependentUpon>PasswordGenerateForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
