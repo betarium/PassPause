@@ -32,19 +32,31 @@ namespace Betarium.PassPause
 
         public string FilePath { get; set; }
         public EncryptModeOption EncryptMode { get; set; }
-        public string EncryptKey { private get; set; }
+        public virtual string EncryptKey
+        {
+            private get
+            {
+                return EncryptKeyValue;
+            }
 
+            set
+            {
+                EncryptKeyValue = value;
+                Encrypt.EncryptKey = EncryptKeyValue;
+            }
+        }
+
+        private string EncryptKeyValue;
         private XmlDocument Document { get; set; }
         private XmlNode RootFolder { get { return Document.SelectSingleNode("//PassPause/RootFolder"); } }
+        private EncryptManager Encrypt = new EncryptManager();
 
         public ConfigAccess()
         {
-            Create();
         }
 
         public void Create()
         {
-            EncryptKey = "";
             EncryptMode = EncryptModeOption.AES;
 
             Document = new XmlDocument();
@@ -79,6 +91,17 @@ namespace Betarium.PassPause
             if (settings == null)
             {
                 return false;
+            }
+
+            string EncryptModeValue = "";
+            var EncryptModeNode = settings.SelectSingleNode("item[@name='EncryptMode']");
+            if (EncryptModeNode != null)
+            {
+                EncryptModeValue = EncryptModeNode.Attributes["value"].Value;
+                if (EncryptModeValue == EncryptModeOption.AES.ToString())
+                {
+                    EncryptMode = EncryptModeOption.AES;
+                }
             }
 
             Document = xml;
@@ -439,7 +462,7 @@ namespace Betarium.PassPause
         {
             if (EncryptMode == EncryptModeOption.AES)
             {
-                value = EncryptTextAes(value);
+                value = Encrypt.EncryptText(value);
             }
             else if (EncryptMode == EncryptModeOption.UrlEncode)
             {
@@ -448,15 +471,16 @@ namespace Betarium.PassPause
             return value;
         }
 
+        /*
         private string EncryptTextAes(string value)
         {
-            if (value == null)
+            if (string.IsNullOrEmpty(value))
             {
                 return null;
             }
 
             byte[] aesIV, aesKey;
-            MakeKey(EncryptKey, out aesIV, out aesKey);
+            Encrypt.MakeKey(EncryptKey, out aesIV, out aesKey);
 
             AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
             aes.BlockSize = 128;
@@ -475,12 +499,13 @@ namespace Betarium.PassPause
                 return result;
             }
         }
+        */
 
         private string DecryptText(string value)
         {
             if (EncryptMode == EncryptModeOption.AES)
             {
-                value = DecryptTextAes(value);
+                value = Encrypt.DecryptText(value);
             }
             else if (EncryptMode == EncryptModeOption.UrlEncode)
             {
@@ -489,15 +514,16 @@ namespace Betarium.PassPause
             return value;
         }
 
+        /*
         private string DecryptTextAes(string value)
         {
-            if (value == null)
+            if (string.IsNullOrEmpty(value))
             {
                 return null;
             }
 
             byte[] aesIV, aesKey;
-            MakeKey(EncryptKey, out aesIV, out aesKey);
+            Encrypt.MakeKey(EncryptKey, out aesIV, out aesKey);
 
             AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
             aes.BlockSize = 128;
@@ -516,6 +542,7 @@ namespace Betarium.PassPause
                 return result;
             }
         }
+        */
 
         private string GetRandamKey()
         {

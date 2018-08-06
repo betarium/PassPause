@@ -16,7 +16,7 @@ namespace Betarium.PassPause
     public partial class MainForm : Form
     {
         public string ConfigFolder { get; set; }
-        public bool IsLogin { get; set; }
+        public bool IsLoaded { get; set; }
         public string FilePath { get; set; }
         public ConfigAccess Config { get; set; }
 
@@ -57,7 +57,7 @@ namespace Betarium.PassPause
 
             if (WindowState != FormWindowState.Minimized)
             {
-                if (!Login())
+                if (!LoadFile())
                 {
                     Close();
                     return;
@@ -66,7 +66,7 @@ namespace Betarium.PassPause
             }
         }
 
-        private bool Login()
+        private bool LoadFile()
         {
             EncryptManager manager = new EncryptManager();
             manager.EncryptKey = System.Environment.UserName;
@@ -75,6 +75,7 @@ namespace Betarium.PassPause
             var configNew = new ConfigAccess();
             configNew.EncryptKey = password2;
 
+            bool success = false;
             FilePath = Path.Combine(ConfigFolder, "Default.xml");
             if (File.Exists(FilePath))
             {
@@ -83,6 +84,15 @@ namespace Betarium.PassPause
                     MessageBox.Show("ファイルの読み込みに失敗しました。");
                     return false;
                 }
+                else
+                {
+                    success = true;
+                }
+            }
+
+            if (!success)
+            {
+                configNew.Create();
             }
 
             Config = configNew;
@@ -91,7 +101,7 @@ namespace Betarium.PassPause
             MakeTree(rootNode, "/");
             rootNode.Expand();
             FolderTree.SelectedNode = rootNode;
-            IsLogin = true;
+            IsLoaded = true;
             return true;
         }
 
@@ -534,9 +544,9 @@ namespace Betarium.PassPause
                 {
                     WindowState = FormWindowState.Normal;
                 }
-                if (!IsLogin)
+                if (!IsLoaded)
                 {
-                    Login();
+                    LoadFile();
                 }
             }
             else if (e.Button == System.Windows.Forms.MouseButtons.Right)
@@ -557,9 +567,9 @@ namespace Betarium.PassPause
         {
             if (WindowState != FormWindowState.Minimized && Visible)
             {
-                if (!IsLogin)
+                if (!IsLoaded)
                 {
-                    Login();
+                    LoadFile();
                 }
             }
 

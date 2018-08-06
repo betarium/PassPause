@@ -10,7 +10,7 @@ namespace Betarium.PassPause
     {
         public string EncryptKey { protected get; set; }
 
-        protected void MakeKey(string encryptKey, out byte[] aesIV, out byte[] aesKey)
+        public void MakeKey(string encryptKey, out byte[] aesIV, out byte[] aesKey)
         {
             byte[] encryptKey2 = Encoding.UTF8.GetBytes(encryptKey);
 
@@ -22,7 +22,10 @@ namespace Betarium.PassPause
 
         public string EncryptText(string value)
         {
-            value = value ?? "";
+            if (string.IsNullOrEmpty(value))
+            {
+                return null;
+            }
 
             byte[] aesIV, aesKey;
             MakeKey(EncryptKey, out aesIV, out aesKey);
@@ -47,7 +50,10 @@ namespace Betarium.PassPause
 
         public string DecryptText(string value)
         {
-            value = value ?? "";
+            if (string.IsNullOrEmpty(value))
+            {
+                return null;
+            }
 
             byte[] aesIV, aesKey;
             MakeKey(EncryptKey, out aesIV, out aesKey);
