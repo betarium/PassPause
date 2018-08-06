@@ -394,27 +394,30 @@ namespace Betarium.PassPause
 
         protected void SetItemComment(XmlNode item, string comment)
         {
-            if (!string.IsNullOrEmpty(comment) && item.HasChildNodes)
+            XmlElement commentNode = null;
+            if (item.HasChildNodes)
             {
-                var oldList = new List<XmlElement>();
                 foreach (XmlElement child in item.ChildNodes)
                 {
                     if (child.Name == "comment")
                     {
-                        oldList.Add(child);
+                        commentNode = child;
                     }
-                }
-                foreach (var child in oldList)
-                {
-                    item.RemoveChild(child);
                 }
             }
 
             if (!string.IsNullOrEmpty(comment))
             {
-                XmlElement commentNode = Document.CreateElement("comment");
+                if (commentNode == null)
+                {
+                    commentNode = Document.CreateElement("comment");
+                }
                 commentNode.InnerText = comment;
                 item.AppendChild(commentNode);
+            }
+            else if (string.IsNullOrEmpty(comment) && commentNode != null)
+            {
+                item.RemoveChild(commentNode);
             }
         }
 
