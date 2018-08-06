@@ -45,17 +45,6 @@ namespace Betarium.PassPause
                     Close();
                     return;
                 }
-
-                //Random rand = new Random();
-                //byte[] buf = new byte[16];
-                //for (int i = 0; i < 16; i++)
-                //{
-                //    buf[i] = (byte)rand.Next(256);
-                //}
-                //string encryptKey = Convert.ToBase64String(buf);
-
-                //Properties.Settings.Default.EncryptKey = encryptKey;
-                //Properties.Settings.Default.Save();
             }
 
             string documentFolder = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
@@ -79,14 +68,6 @@ namespace Betarium.PassPause
 
         private bool Login()
         {
-            var loginForm = new LoginForm();
-            loginForm.UserIdField.Text = Environment.UserName;
-            loginForm.Auth += LoginForm_Auth;
-            if (loginForm.ShowDialog() != DialogResult.OK)
-            {
-                return false;
-            }
-
             EncryptManager manager = new EncryptManager();
             manager.EncryptKey = System.Environment.UserName;
             string password2 = manager.DecryptText(Properties.Settings.Default.EncryptKey);
@@ -508,25 +489,6 @@ namespace Betarium.PassPause
             currentNode.Remove();
             parent.Nodes.Insert(oldIndex - 1, currentNode);
 
-            /*
-            List<TreeNode> nodeList = new List<TreeNode>();
-            foreach (TreeNode tmp in parent.Nodes)
-            {
-                nodeList.Add(tmp);
-            }
-
-            parent.Nodes.Clear();
-
-            for (int i = 0; i < nodeList.Count; i++)
-            {
-                if (currentNode.Index - 1 == i)
-                {
-                    parent.Nodes.Add(currentNode);
-                }
-                parent.Nodes.Add(nodeList[i]);
-            }
-            */
-
             FolderTree.SelectedNode = currentNode;
 
             string currentPath = GetCurrentPath();
@@ -556,32 +518,6 @@ namespace Betarium.PassPause
             int oldIndex = currentNode.Index;
             currentNode.Remove();
             parent.Nodes.Insert(oldIndex + 1, currentNode);
-
-            /*
-            currentNode.Remove();
-            List<TreeNode> nodeList = new List<TreeNode>();
-            foreach (TreeNode tmp in parent.Nodes)
-            {
-                nodeList.Add(tmp);
-            }
-
-            parent.Nodes.Clear();
-
-            bool nodeAdd = false;
-            for (int i = 0; i < nodeList.Count; i++)
-            {
-                if (!nodeAdd && currentNode.Index + 1 == i)
-                {
-                    parent.Nodes.Add(currentNode);
-                    nodeAdd = true;
-                }
-                parent.Nodes.Add(nodeList[i]);
-            }
-            if (!nodeAdd)
-            {
-                parent.Nodes.Add(currentNode);
-            }
-            */
 
             FolderTree.SelectedNode = currentNode;
 

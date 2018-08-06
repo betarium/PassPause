@@ -102,8 +102,6 @@ namespace Betarium.PassPause
 
         public void Save(string filePath)
         {
-            //SetSetting("EncryptMode", EncryptMode.ToString());
-
             InitSetting(false);
 
             Document.Save(filePath);
@@ -203,14 +201,9 @@ namespace Betarium.PassPause
 
             if (item.Name == "item")
             {
-                //XmlAttribute attr1 = item.Attributes["Name"];
                 XmlAttribute attr2 = item.Attributes["Url"];
                 XmlAttribute attr3 = item.Attributes["UserId"];
                 XmlAttribute attr4 = item.Attributes["Password"];
-                //if (attr1 == null)
-                //{
-                //    return null;
-                //}
 
                 ConfigItem data = new ConfigItem();
                 data.Name = attr1.Value;
@@ -358,8 +351,6 @@ namespace Betarium.PassPause
 
             if (!data.IsDirectory)
             {
-                //XmlAttribute attr1 = Document.CreateAttribute("Name");
-                //attr1.Value = data.Name;
                 XmlAttribute attr2 = Document.CreateAttribute("Url");
                 attr2.Value = data.Url;
                 XmlAttribute attr3 = Document.CreateAttribute("UserId");
@@ -370,7 +361,6 @@ namespace Betarium.PassPause
                 attr3.Value = EncryptText(attr3.Value);
                 attr4.Value = EncryptText(attr4.Value);
 
-                //item.Attributes.SetNamedItem(attr1);
                 item.Attributes.SetNamedItem(attr2);
                 item.Attributes.SetNamedItem(attr3);
                 item.Attributes.SetNamedItem(attr4);
@@ -421,30 +411,6 @@ namespace Betarium.PassPause
                 return;
             }
             parent.InsertBefore(item, prev);
-
-            /*
-            List<XmlNode> childNodes = new List<XmlNode>();
-            foreach (XmlNode child in parent.ChildNodes)
-            {
-                childNodes.Add(child);
-            }
-
-            for (int i = 1; i < childNodes.Count; i++)
-            {
-                if (childNodes[i] == item)
-                {
-                    var old = childNodes[i - 1];
-                    childNodes[i - 1] = item;
-                    childNodes[i] = old;
-                }
-            }
-
-            parent.RemoveAll();
-            foreach (var child in childNodes)
-            {
-                parent.AppendChild(child);
-            }
-            */
         }
 
         public void MoveItemDown(string path)
@@ -457,31 +423,6 @@ namespace Betarium.PassPause
                 return;
             }
             parent.InsertAfter(item, next);
-
-            /*
-            List<XmlNode> childNodes = new List<XmlNode>();
-            foreach (XmlNode child in parent.ChildNodes)
-            {
-                childNodes.Add(child);
-            }
-
-            for (int i = 0; i < childNodes.Count - 1; i++)
-            {
-                if (childNodes[i] == item)
-                {
-                    var old = childNodes[i + 1];
-                    childNodes[i + 1] = item;
-                    childNodes[i] = old;
-                    i++;
-                }
-            }
-
-            parent.RemoveAll();
-            foreach (var child in childNodes)
-            {
-                parent.AppendChild(child);
-            }
-            */
         }
 
         private void MakeKey(string encryptKey, out byte[] aesIV, out byte[] aesKey)
