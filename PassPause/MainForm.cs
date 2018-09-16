@@ -18,6 +18,7 @@ namespace Betarium.PassPause
         public string ConfigFolder { get; set; }
         public bool IsLoaded { get; set; }
         public string FilePath { get; set; }
+        public string DefaultFilePath { get; set; }
         public ConfigAccess Config { get; set; }
 
         public MainForm()
@@ -34,6 +35,7 @@ namespace Betarium.PassPause
             TrayIcon.Text = Application.ProductName;
 #if DEBUG
             TrayIcon.Text = TrayIcon.Text + " (DEBUG)";
+            Text = Application.ProductName + " (DEBUG)";
 #endif
 
             if (string.IsNullOrEmpty(Properties.Settings.Default.EncryptKey))
@@ -55,9 +57,16 @@ namespace Betarium.PassPause
             }
             ConfigFolder = configFolder;
 
+            DefaultFilePath = Path.Combine(ConfigFolder, "Default.xml");
+            var commandLines = Environment.GetCommandLineArgs();
+            if (commandLines.Length >= 2)
+            {
+                DefaultFilePath = commandLines[1];
+            }
+
             if (WindowState != FormWindowState.Minimized)
             {
-                if (!LoadFile())
+                if (!LoadFile(DefaultFilePath))
                 {
                     Close();
                     return;
@@ -66,7 +75,7 @@ namespace Betarium.PassPause
             }
         }
 
-        private bool LoadFile()
+        private bool LoadFile(string path)
         {
             EncryptManager manager = new EncryptManager();
             manager.EncryptKey = System.Environment.UserName;
@@ -76,10 +85,9 @@ namespace Betarium.PassPause
             configNew.EncryptKey = password2;
 
             bool success = false;
-            FilePath = Path.Combine(ConfigFolder, "Default.xml");
-            if (File.Exists(FilePath))
+            if (File.Exists(path))
             {
-                if (!configNew.Load(FilePath))
+                if (!configNew.Load(path))
                 {
                     MessageBox.Show("ファイルの読み込みに失敗しました。");
                     return false;
@@ -101,7 +109,10 @@ namespace Betarium.PassPause
             MakeTree(rootNode, "/");
             rootNode.Expand();
             FolderTree.SelectedNode = rootNode;
+
             IsLoaded = true;
+            FilePath = path;
+
             return true;
         }
 
@@ -348,7 +359,7 @@ namespace Betarium.PassPause
             string path = GetCurrentPath();
             var item = Config.GetItem(path);
 
-            bool IsRoot = (FolderTree.TopNode == currentNode || FolderTree.TopNode == currentNode.Parent);
+            bool IsRoot = (FolderTree.TopNode == currentNode);
             bool IsItem = (currentNode != null) && (item != null) && (!item.IsDirectory);
             bool IsDirectory = (currentNode != null) && (item != null) && (item.IsDirectory);
 
@@ -546,7 +557,7 @@ namespace Betarium.PassPause
                 }
                 if (!IsLoaded)
                 {
-                    LoadFile();
+                    LoadFile(DefaultFilePath);
                 }
             }
             else if (e.Button == System.Windows.Forms.MouseButtons.Right)
@@ -569,7 +580,7 @@ namespace Betarium.PassPause
             {
                 if (!IsLoaded)
                 {
-                    LoadFile();
+                    LoadFile(DefaultFilePath);
                 }
             }
 
